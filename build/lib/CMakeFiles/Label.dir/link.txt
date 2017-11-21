@@ -1,0 +1,2 @@
+/usr/bin/ar qc libLabel.a  CMakeFiles/Label.dir/Label.cxx.o
+/usr/bin/ranlib libLabel.a

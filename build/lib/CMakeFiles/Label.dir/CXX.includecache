@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/fs20167/ProjectCV/lib/Label.cxx
+Label.h
+/home/fs20167/ProjectCV/lib/Label.h
+
+/home/fs20167/ProjectCV/lib/Label.h
+stdio.h
+-
+opencv2/opencv.hpp
+-
+cstdlib
+-
+queue
+-
+iostream
+-
+vector
+-
+random
+-
+set
+-
+map
+-
+
