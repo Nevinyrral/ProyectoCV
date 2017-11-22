@@ -35,8 +35,6 @@ void Label::BFS(
   std::uniform_int_distribution< > dis( -1, 256 );
   TColorMap color_map;
 
-  Mat new_output = Mat(rows, cols, CV_8UC3);
-
   int label = 1;
   int r, g, b;
 
@@ -45,56 +43,55 @@ void Label::BFS(
     pointer = input.ptr< uchar >( i );
     for( int j = 0; j < cols; ++j )
     {
+      r = 0; g = 255; b = 0;
       if( aux[ i ][ j ] == -1 && ( int ) pointer[ j ] == max_threshold )
       {
         aux[ i ][ j ] = label;
-        TPixel pixel = std::make_pair( j, i );
+        Pixel pixel;
+        pixel.SetCoordinates( j, i );
         queue.push( pixel );
-        regions[ label ] ++;
-        new_output.at< Vec3b >( j, i )[ 0 ] = ( uchar ) r;
-        new_output.at< Vec3b >( j, i )[ 1 ] = ( uchar ) g;
-        new_output.at< Vec3b >( j, i )[ 2 ] = ( uchar ) b;
+        output.at< Vec3b >( i, j )[ 0 ] = ( uchar ) r;
+        output.at< Vec3b >( i, j )[ 1 ] = ( uchar ) g;
+        output.at< Vec3b >( i, j )[ 2 ] = ( uchar ) b;
         while ( !queue.empty( ) )
         {
-          TPixel current_pixel = queue.front( );
+          Pixel current_pixel = queue.front( );
           queue.pop( );
           for( int direction = 0; direction < mode; ++direction )
           {
-            int current_x = std::get< 0 >( current_pixel ) + dx[ direction ];
-            int current_y = std::get< 1 >( current_pixel ) + dy[ direction ];
-            if( current_x < 0 || current_x == rows ) continue; // Out of bounds
-            if( current_y < 0 || current_y == cols ) continue; // Out of bounds
+            int current_x = current_pixel.GetX( ) + dx[ direction ];
+            int current_y = current_pixel.GetY( ) + dy[ direction ];
+            if( current_x < 0 || current_x == cols ) continue; // Out of bounds
+            if( current_y < 0 || current_y == rows ) continue; // Out of bounds
             int current_color = ( int ) input.at< uchar >( current_y, current_x );
+            std::cout << "current_color: " << std::to_string( current_color ) << '\n';
+            std::cout << "max_threshold: " << std::to_string( current_color ) << '\n';
             if( aux[ current_y ][ current_x ] == -1 &&
               current_color == max_threshold
               )
             {
               aux[ current_y ][ current_x ] = label;
-              TPixel neighbor_pixel = std::make_pair( current_x, current_y );
+              Pixel neighbor_pixel;
+              neighbor_pixel.SetCoordinates( current_x, current_y );
               queue.push( neighbor_pixel );
-              regions[ label ]++;
-              new_output.at< Vec3b >( current_y, current_x )[ 0 ] = ( uchar ) r;
-              new_output.at< Vec3b >( current_y, current_x )[ 1 ] = ( uchar ) g;
-              new_output.at< Vec3b >( current_y, current_x )[ 2 ] = ( uchar ) b;
-            } else if( current_color == 0 )
+              output.at< Vec3b >( current_y, current_x )[ 0 ] = ( uchar ) r;
+              output.at< Vec3b >( current_y, current_x )[ 1 ] = ( uchar ) g;
+              output.at< Vec3b >( current_y, current_x )[ 2 ] = ( uchar ) b;
+            } else {
               aux[ current_y ][ current_x ] = 0; // fi
+              output.at< Vec3b >( current_y, current_x )[ 0 ] = ( uchar ) 0;
+              output.at< Vec3b >( current_y, current_x )[ 1 ] = ( uchar ) 0;
+              output.at< Vec3b >( current_y, current_x )[ 2 ] = ( uchar ) 0;
+            }
           } // rof
         } // elihw
-        bool new_color = false;
-        while( !new_color )
-        {
-          r = dis( gen ); g = dis( gen ); b = dis( gen );
-          std::string color_signature =
-            std::to_string( r ) + std::to_string( g ) + std::to_string( b );
-          if( color_map.find( color_signature ) == color_map.end( ) )
-          {
-              color_map.insert( color_signature );
-              new_color = true;
-          }
-        } // elihw
-        label += 1;
-      } else if( pointer[ j ] == 0 )
+        label++;
+      } else {
         aux[ i ][ j ] = 0;// fi
+        output.at< Vec3b >( i, j )[ 0 ] = ( uchar ) 0;
+        output.at< Vec3b >( i, j )[ 1 ] = ( uchar ) 0;
+        output.at< Vec3b >( i, j )[ 2 ] = ( uchar ) 0;
+      }
     } // rof
   } // rof
 
@@ -140,4 +137,28 @@ void Label::BFS(
   //     output.at< Vec3b >( pixel_y, pixel_x )[ 2 ] = ( uchar ) b;
   //   } // rof
   // } // rof
+}
+
+Pixel::Pixel( )
+{
+}
+
+Pixel::~Pixel( )
+{
+}
+
+void Pixel::SetCoordinates( int x, int y )
+{
+  m_X = x;
+  m_Y = y;
+}
+
+int Pixel::GetX( )
+{
+  return m_X;
+}
+
+int Pixel::GetY( )
+{
+  return m_Y;
 }

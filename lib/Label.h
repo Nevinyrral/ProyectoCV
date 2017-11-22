@@ -4,18 +4,31 @@
 #include <queue>
 #include <iostream>
 #include <vector>
-#include <random>
 #include <set>
-#include <map>
+#include <random>
 
 using namespace cv;
+
+class Pixel
+{
+  public:
+    void   SetCoordinates( int x, int y );
+    void   SetData( uchar& data );
+    int    GetX( );
+    int    GetY( );
+    Pixel( );
+    ~Pixel( );
+
+  private:
+    int    m_X;
+    int    m_Y;
+}; // ssalc
 
 class Label
 {
   public:
-    typedef std::pair< int, int > TPixel;
-    typedef std::map< int, int > TRegions;
-    typedef std::queue< std::pair< int, int > > BFSQueue;
+    typedef std::vector< int > TRegions;
+    typedef std::queue< Pixel > BFSQueue;
     typedef std::set< std::string > TColorMap;
   public:
     static void BFS(
